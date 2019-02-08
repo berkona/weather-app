@@ -1,0 +1,50 @@
+.Conditions-wrapper {
+    background: rgba(124, 124, 124, 0.5);
+    border-radius: 50%;
+    height: 128px;
+    width: 128px;
+    border: solid;
+}
+
+.Conditions-wrapper p {
+    color: white;
+    margin: 0px;
+    font-size: 12px;
+}
+
+.Conditions-wrapper .Conditions-current-temp {
+    font-size: 32px;
+    position: relative;
+    top: 42px;
+    left: -20px;
+}
+
+.Conditions-wrapper .Conditions-temp-label {
+    font-size: 16px;
+    position: relative;
+    top: -63px;
+}
+
+.Conditions-wrapper .Conditions-humidity-label {
+    font-size: 16px;
+    position: relative;
+    top: -20px;
+}
+
+.Conditions-wrapper .Conditions-temp-high {
+    position: relative;
+    top: 4px;
+    left: 38px;
+}
+
+.Conditions-wrapper .Conditions-temp-low {
+    position: relative;
+    top: 13px;
+    left: 38px;
+}
+
+.Conditions-wrapper .Conditions-humidity {
+    position: relative;
+    top: 36px;
+    left: 0px;
+}

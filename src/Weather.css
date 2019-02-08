@@ -1,0 +1,13 @@
+.Weather-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.Weather-icon {
+    font-size: 48px;
+}
+
+.Weather-description {
+    margin: 0px;
+}

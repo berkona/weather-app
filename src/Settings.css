@@ -1,0 +1,27 @@
+.Settings {
+    border-radius: 16px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-align: left;
+    background: black;
+    padding-bottom: 16px;
+    color: white;
+}
+
+.Settings-header {
+    padding-top: 16px;
+    padding-left: 16px;
+}
+
+.Settings-body {
+    padding-left: 16px;
+}
+
+.Settings-footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    padding-right: 16px;
+}

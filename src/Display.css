@@ -1,0 +1,27 @@
+.Display {
+    padding-bottom: 16px;
+    border-radius: 16px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.Display-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.Display-body {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.Display-footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    padding-right: 20px;
+}
