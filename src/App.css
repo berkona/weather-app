@@ -8,6 +8,7 @@
     background: aliceblue;
 }
 
+/* Messing with library classes b/c need to fix heights to make both sides the same size */
 .react-card-flip {
     height: 100%;
 }

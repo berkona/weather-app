@@ -1,3 +1,5 @@
+import * as request from 'superagent'
+import { baseUrl, apiKey } from './config'
 
 /**
  * Formats a unitted number for display to the user
@@ -72,5 +74,18 @@ export class StorageService {
 
   static set(key, value) {
     localStorage.setItem(`${STORAGE_PREFIX}.${key}`, JSON.stringify(value))
+  }
+}
+
+/**
+ * A simple service to get current weather data from OpenWeatherMap
+ */
+export class OpenWeatherMapService {
+  static getLatLon(lat, lon) {
+    return request.get(`${baseUrl}/weather?appid=${apiKey}&lat=${lat}&lon=${lon}`)
+  }
+
+  static getZip(zipcode) {
+    return request.get(`${baseUrl}/weather?appid=${apiKey}&zip=${zipcode}`)
   }
 }

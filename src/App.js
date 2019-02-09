@@ -1,10 +1,8 @@
 import React, { Component } from 'react'
-import ReactCardFlip from 'react-card-flip';
-import * as request from 'superagent'
-import { baseUrl, apiKey } from './config'
+import ReactCardFlip from 'react-card-flip'
 import Settings from './Settings'
 import Display from './Display'
-import { getCurrentPosition, StorageService } from './utils'
+import { getCurrentPosition, StorageService, OpenWeatherMapService } from './utils'
 
 import './App.css'
 
@@ -19,12 +17,16 @@ class App extends Component {
     super(props)
     this.state = {
       showSettings: false,
-      currentLocation: null,
+      currentLocation: StorageService.get('currentLocation') || "",
       fetchingData: false,
-      lastUpdatedAt: 0,
-      weather: {},
-      conditions: {},
-      settings: StorageService.get('settings') || { tempScale: 'C' },
+      lastUpdatedAt: StorageService.get('lastUpdatedAt') || 0,
+      weather: StorageService.get('weather') || { id: '800', description: 'Sunny' },
+      conditions: StorageService.get('conditions') || {},
+      settings: StorageService.get('settings') || {
+        useLocation: true,
+        zipcode: 91601,
+        tempScale: 'C'
+      },
     }
   }
 
@@ -36,45 +38,29 @@ class App extends Component {
    * Conditionally fetch data if the current stored data is not fresh enough
    */
   refreshDataCached = async () => {
-    const lastUpdatedAt = StorageService.get('lastUpdatedAt')
-    const cachedLocation = StorageService.get('currentLocation')
-    const cachedWeather = StorageService.get('weather')
-    const cachedConditions = StorageService.get('conditions')
-
     // check if we can use stored data and if so use that instead
-    if (Date.now() - lastUpdatedAt < EXPIRATION_TIME
-      && cachedLocation != null
-      && cachedWeather != null
-      && cachedConditions != null) {
-        this.setState({
-          lastUpdatedAt: lastUpdatedAt,
-          currentLocation: cachedLocation,
-          weather: cachedWeather,
-          conditions: cachedConditions,
-        })
+    if (Date.now() - this.state.lastUpdatedAt < EXPIRATION_TIME) {
         // bail
         return
     }
-
     await this.refreshData()
   }
 
   /**
    * Fetch data from the API about the user's current location
    * Does not perform any cached item checking
-   * Threw this into a single fn just for simplicity
    */
   refreshData = async () => {
-    const pos = await getCurrentPosition()
-    const currentLocation = {
-      lat: pos.coords.latitude,
-      lon: pos.coords.longitude,
+    let response;
+    this.setState({ fetchingData: true })
+    if (this.state.settings.useLocation) {
+      const pos = await getCurrentPosition()
+      response = await OpenWeatherMapService.getLatLon(pos.coords.latitude, pos.coords.longitude);
+    } else {
+      response = await OpenWeatherMapService.getZip(this.state.settings.zipcode);
     }
 
-    this.setState({ fetchingData: true })
-
-    const response = await request.get(`${baseUrl}/weather?appid=${apiKey}&lat=${currentLocation.lat}&lon=${currentLocation.lon}`)
-
+    const currentLocation = response.body.name
     const weather = response.body.weather && response.body.weather[0]
     const conditions = response.body.main
 
@@ -82,7 +68,7 @@ class App extends Component {
       currentLocation,
       weather, conditions,
       lastUpdatedAt: Date.now(),
-      fetchingData: false
+      fetchingData: false,
     })
 
     StorageService.set('lastUpdatedAt', this.state.lastUpdatedAt)
@@ -96,21 +82,24 @@ class App extends Component {
   }
 
   onSettingsSubmit = (settings) => {
-      this.setState({
-        showSettings: false,
-        settings: settings,
-      });
-      StorageService.set('settings', settings);
+    // detect if we need to force an update
+    let needsRefresh = this.state.settings.useLocation != settings.useLocation
+     || this.state.settings.zipcode != settings.zipcode;
+    this.setState({
+      showSettings: false,
+      settings: settings,
+    }, () => {
+      if (needsRefresh) {
+          this.refreshData()
+      }
+    });
+    StorageService.set('settings', settings)
   }
 
   render() {
     let page;
-    // waiting for location
-    if (this.state.currentLocation === null) {
-      page = <p>Locating you (click allow!)...</p>
-    }
     // fetching from API
-    else if (this.state.fetchingData) {
+    if (this.state.fetchingData) {
       page =  <p>Fetching data...</p>
     }
     // TODO: add a state if user has blocked geolocation access
@@ -119,6 +108,7 @@ class App extends Component {
         <ReactCardFlip isFlipped={this.state.showSettings}>
           <Display
             key="front"
+            locationName={this.state.currentLocation}
             lastUpdatedAt={this.state.lastUpdatedAt}
             conditions={this.state.conditions}
             weather={this.state.weather}

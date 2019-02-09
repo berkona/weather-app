@@ -1,5 +1,3 @@
-'use strict'
-
 /**
  * Use this file to store any deployment-varying variables.
  * Obviously in production we would store the API key in a cookie and retrieve

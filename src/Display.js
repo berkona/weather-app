@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { getImageForWeather } from './utils'
-import { MdSettings, MdRefresh } from 'react-icons/md'
+import { MdSettings, MdRefresh, MdPlace } from 'react-icons/md'
 import Weather from './Weather'
 import Conditions from './Conditions'
 import './Display.css'
@@ -35,6 +35,7 @@ class Display extends Component {
           />
         </div>
         <div className="Display-footer">
+          <p><MdPlace /> <span>{this.props.locationName}</span></p>
           <button className="btn" onClick={this.props.onSettingsClick}><MdSettings /></button>
         </div>
       </div>

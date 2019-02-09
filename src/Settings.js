@@ -16,6 +16,15 @@ class Settings extends Component {
       })
   }
 
+  handleInputChange = event => {
+    const target = event.target
+    const value = target.type === 'checkbox' ? target.checked : target.value
+    const name = target.name
+    this.setState({
+      settings: Object.assign({}, this.state.settings, { [name]: value })
+    })
+  }
+
   handleFormSubmit = formSubmitEvent => {
     formSubmitEvent.preventDefault();
     this.props.onSubmit(this.state.settings);
@@ -57,6 +66,36 @@ class Settings extends Component {
               </label>
             </div>
           </div>
+          <div className="form-group">
+            <label>Location</label>
+            <div className="form-check">
+              <input
+                type="checkbox"
+                name="useLocation"
+                className="form-check-input"
+                checked={this.state.settings.useLocation}
+                onChange={this.handleInputChange}
+              />
+              Automatically determine location
+            </div>
+          </div>
+            {
+              ( !this.state.settings.useLocation ) &&
+              (
+                <div className="form-group">
+                  <label>Zipcode</label>
+                  <div className="form-check">
+                    <input
+                      type="text"
+                      name="zipcode"
+                      className="form-check-input"
+                      value={this.state.settings.zipcode}
+                      onChange={this.handleInputChange}
+                    />
+                  </div>
+                </div>
+              )
+            }
         </div>
         <div className="Settings-footer">
           <button className="btn" type="submit"><MdSave /></button>
